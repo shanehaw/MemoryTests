@@ -4,6 +4,9 @@
 #include <QtTest/QtTest>
 #include "CreateMemoryDocUseCase.h"
 #include "CreateMemoryDocOutputBoundarySpy.h"
+#include <sstream>
+#include <string>
+#include <iostream>
 
 class CreateMemoryDocUseCaseTests: public QObject
 {
@@ -15,7 +18,12 @@ private slots:
     void degenerateCaseSourceIsOnlyWhitespace();
     void degenerateCaseSourceIsOnlyTabs();
     void degenerateCaseSourceIsOnlyNewLines();
-    void singlePunctionation();
+    void singlePunctuation();
+    void multiplePunctuation();
+    void singleCharacter();
+    void singleWord();
+    void multipleWords();
+    void punctuationWithWords();
 
 private:
     CreateMemoryDocInputBoundary * useCase;

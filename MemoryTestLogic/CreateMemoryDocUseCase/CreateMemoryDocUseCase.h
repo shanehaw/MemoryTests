@@ -3,13 +3,15 @@
 
 #include "CreateMemoryDocInputBoundary.h"
 #include <cwctype>
+#include <vector>
+#include <string>
 
 class CreateMemoryDocUseCase : public CreateMemoryDocInputBoundary
 {
 public:
     CreateMemoryDocUseCase();
     ~CreateMemoryDocUseCase();
-    void create(std::wstring source, CreateMemoryDocOutputBoundary& outputBoundary) override;
+    void create(CreateMemoryDocRequestModel& request, CreateMemoryDocOutputBoundary& outputBoundary) override;
 };
 
 #endif // CREATEMEMORYDOCUSECASE_H

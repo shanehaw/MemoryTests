@@ -22,6 +22,7 @@ SOURCES += \
 HEADERS += \
     CreateMemoryDocUseCase/CreateMemoryDocInputBoundary.h \
     CreateMemoryDocUseCase/CreateMemoryDocOutputBoundary.h \
+    CreateMemoryDocUseCase/CreateMemoryDocRequestModel.h \
     CreateMemoryDocUseCase/CreateMemoryDocResultModel.h \
     CreateMemoryDocUseCase/CreateMemoryDocUseCase.h \
     CreateMemoryDocUseCase/MemoryItem.h \

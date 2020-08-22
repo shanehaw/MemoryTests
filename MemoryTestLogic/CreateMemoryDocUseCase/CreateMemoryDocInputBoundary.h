@@ -2,13 +2,14 @@
 #define CREATEMEMORYDOCINPUTBOUNDARY_H
 
 #include "CreateMemoryDocOutputBoundary.h"
+#include "CreateMemoryDocRequestModel.h"
 #include <string>
 
 class CreateMemoryDocInputBoundary {
 public:
     CreateMemoryDocInputBoundary() {}
     virtual ~CreateMemoryDocInputBoundary() {}
-    virtual void create(std::wstring source, CreateMemoryDocOutputBoundary& outputBoundary) = 0;
+    virtual void create(CreateMemoryDocRequestModel& request, CreateMemoryDocOutputBoundary& outputBoundary) = 0;
 };
 
 
