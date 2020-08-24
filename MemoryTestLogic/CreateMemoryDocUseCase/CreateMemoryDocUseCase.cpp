@@ -12,6 +12,10 @@ CreateMemoryDocUseCase::~CreateMemoryDocUseCase()
 
 void CreateMemoryDocUseCase::create(CreateMemoryDocRequestModel& request, CreateMemoryDocOutputBoundary& outputBoundary)
 {    
+    source = request.source;
+    punctuationChars = request.punctuationChars;
+
+
     CreateMemoryDocResultModel * result = new CreateMemoryDocResultModel();
     auto it = request.source.cbegin();
     auto end = request.source.cend();
@@ -26,7 +30,7 @@ void CreateMemoryDocUseCase::create(CreateMemoryDocRequestModel& request, Create
         }      
 
         //handle punctuation
-        if(request.punctuationChars.find(c) != request.punctuationChars.end()) {
+        if(isPunctuationCharacter(c)) {
             MemoryItem * punctuationItem = new MemoryItem();
             punctuationItem->type = Punctionation;
             punctuationItem->value = c;
@@ -37,25 +41,46 @@ void CreateMemoryDocUseCase::create(CreateMemoryDocRequestModel& request, Create
 
         //handle words
         std::vector<wchar_t> token;
+        std::vector<wchar_t> trailingPuncChars;
         do
-        {
-            token.push_back(c);
-            ++it;
-            if(it != end)
+        {            
+            if(isPunctuationCharacter(c))
             {
-                c = *it;
+                trailingPuncChars.push_back(c);
             }
-        } while(it != end
-                && !iswspace(c)
-                && request.punctuationChars.find(c) == request.punctuationChars.end());
+            else
+            {
+                for(auto tpc = trailingPuncChars.begin(); tpc != trailingPuncChars.end(); ++tpc)
+                {
+                    wchar_t tpchar = *tpc;
+                    token.push_back(tpchar);
+                }
+                trailingPuncChars.clear();
+                token.push_back(c);
+            }
+            c = *(++it);
+        } while(it != end && !iswspace(c));
 
-        std::wstring strToken(token.begin(), token.end());        
+        std::wstring strToken(token.begin(), token.end());
         MemoryItem * tokenItem = new MemoryItem();
         tokenItem->type = TestableToken;
         tokenItem->value = strToken;
         result->items.push_back(*tokenItem);
+
+        for(auto tpc = trailingPuncChars.begin(); tpc != trailingPuncChars.end(); ++tpc)
+        {
+            wchar_t tpchar = *tpc;
+            MemoryItem * punctuationItem = new MemoryItem();
+            punctuationItem->type = Punctionation;
+            punctuationItem->value = tpchar;
+            result->items.push_back(*punctuationItem);
+        }
     }
 
     outputBoundary.present(result);
 }
 
+bool CreateMemoryDocUseCase::isPunctuationCharacter(wchar_t c)
+{
+    return punctuationChars.find(c) != punctuationChars.end();
+}

@@ -25,6 +25,7 @@ private slots:
     void multipleWords();
     void punctuationWithWords();
     void punctuationInWords();
+    void punctuationOnEndButNotEndOfSource();
 
 private:
     CreateMemoryDocInputBoundary * useCase;
@@ -33,6 +34,7 @@ private:
     void verifyEmptyResultFor(std::wstring source);
     void verifyResults(std::vector<std::wstring> expectations);
     CreateMemoryDocRequestModel createRequest(std::wstring source, std::vector<wchar_t> punctuationMarks);
+    std::string convertToString(std::wstring source);
 };
 
 

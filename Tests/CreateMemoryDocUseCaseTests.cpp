@@ -39,7 +39,6 @@ void CreateMemoryDocUseCaseTests::singlePunctuation()
     CreateMemoryDocRequestModel request = createRequest(
         L".",
         { L'.' });
-
     useCase->create(request, *spy);
     verifyResults({ L"P:." });
 }
@@ -49,7 +48,6 @@ void CreateMemoryDocUseCaseTests::multiplePunctuation()
     CreateMemoryDocRequestModel request = createRequest(
         L"...",
         { L'.' });
-
     useCase->create(request, *spy);
     verifyResults({L"P:.", L"P:.", L"P:."});
 }
@@ -59,7 +57,6 @@ void CreateMemoryDocUseCaseTests::singleCharacter()
     CreateMemoryDocRequestModel request = createRequest(
         L"a",
         { L'.' });
-
     useCase->create(request, *spy);
     verifyResults({L"T:a"});
 }
@@ -69,7 +66,6 @@ void CreateMemoryDocUseCaseTests::singleWord()
     CreateMemoryDocRequestModel request = createRequest(
                 L"word",
                 { L'.' });
-
     useCase->create(request, *spy);
     verifyResults({L"T:word"});
 }
@@ -79,7 +75,6 @@ void CreateMemoryDocUseCaseTests::multipleWords()
     CreateMemoryDocRequestModel request = createRequest(
                 L"multiple words",
                 { L'.' });
-
     useCase->create(request, *spy);
     verifyResults({L"T:multiple", L"T:words"});
 }
@@ -89,7 +84,6 @@ void CreateMemoryDocUseCaseTests::punctuationWithWords()
     CreateMemoryDocRequestModel request = createRequest(
                 L"This contains \"multiple words\"!?#",
                 { L'\"', L'!', L'?', L'#' });
-
     useCase->create(request, *spy);
     verifyResults({L"T:This", L"T:contains", L"P:\"", L"T:multiple", L"T:words", L"P:\"", L"P:!", L"P:?", L"P:#"});
 }
@@ -101,6 +95,15 @@ void CreateMemoryDocUseCaseTests::punctuationInWords()
                 { L'\'' });
     useCase->create(request, *spy);
     verifyResults({L"T:Let\'s", L"T:go"});
+}
+
+void CreateMemoryDocUseCaseTests::punctuationOnEndButNotEndOfSource()
+{
+    CreateMemoryDocRequestModel request = createRequest(
+                L"Let's go! I said.",
+                { L'\'', L'.', L'!' });
+    useCase->create(request, *spy);
+    verifyResults({L"T:Let\'s", L"T:go", L"P:!", L"T:I", L"T:said", L"P:."});
 }
 
 //helpers¸
@@ -120,7 +123,14 @@ void CreateMemoryDocUseCaseTests::verifyResults(std::vector<std::wstring> expect
 {
     CreateMemoryDocResultModel * model = spy->receivedModel;
     QVERIFY(model != nullptr);
-    CreateMemoryDocResultModel result = *model;
+    CreateMemoryDocResultModel result = *model;   
+
+    for(auto it = result.items.begin(); it != result.items.end(); ++it)
+    {
+        MemoryItem item = *it;
+        std::wcout << L"'" << item.value << L"'\n";
+    }
+
 
     QVERIFY(result.items.size() == expectations.size());
     for(size_t i = 0; i < expectations.size(); i++)
@@ -159,4 +169,9 @@ CreateMemoryDocRequestModel CreateMemoryDocUseCaseTests::createRequest(std::wstr
     }
 
     return request;
+}
+
+std::string CreateMemoryDocUseCaseTests::convertToString(std::wstring source)
+{
+    return std::string(source.begin(), source.end());
 }
