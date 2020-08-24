@@ -24,12 +24,15 @@ private slots:
     void singleWord();
     void multipleWords();
     void punctuationWithWords();
+    void punctuationInWords();
 
 private:
     CreateMemoryDocInputBoundary * useCase;
     CreateMemoryDocOutputBoundarySpy * spy;
 
     void verifyEmptyResultFor(std::wstring source);
+    void verifyResults(std::vector<std::wstring> expectations);
+    CreateMemoryDocRequestModel createRequest(std::wstring source, std::vector<wchar_t> punctuationMarks);
 };
 
 

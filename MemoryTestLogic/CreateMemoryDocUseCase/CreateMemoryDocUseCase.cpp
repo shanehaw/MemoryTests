@@ -18,12 +18,24 @@ void CreateMemoryDocUseCase::create(CreateMemoryDocRequestModel& request, Create
     while(it != end)
     {        
         wchar_t c = *it;
+        //handle white space
         if(iswspace(c))
         {
             ++it;
             continue;
         }      
 
+        //handle punctuation
+        if(request.punctuationChars.find(c) != request.punctuationChars.end()) {
+            MemoryItem * punctuationItem = new MemoryItem();
+            punctuationItem->type = Punctionation;
+            punctuationItem->value = c;
+            result->items.push_back(*punctuationItem);
+            ++it;
+            continue;
+        }
+
+        //handle words
         std::vector<wchar_t> token;
         do
         {
@@ -33,23 +45,15 @@ void CreateMemoryDocUseCase::create(CreateMemoryDocRequestModel& request, Create
             {
                 c = *it;
             }
-        } while(it != end && !iswspace(c) && iswalpha(c));
+        } while(it != end
+                && !iswspace(c)
+                && request.punctuationChars.find(c) == request.punctuationChars.end());
 
-        std::wstring strToken(token.begin(), token.end());
-        if(token.size() == 1 && request.punctuationChars.find(token.front()) != request.punctuationChars.end())
-        {
-            MemoryItem * punctuationItem = new MemoryItem();
-            punctuationItem->type = Punctionation;
-            punctuationItem->value = strToken;
-            result->items.push_back(*punctuationItem);
-        }
-        else
-        {
-            MemoryItem * tokenItem = new MemoryItem();
-            tokenItem->type = TestableToken;
-            tokenItem->value = strToken;
-            result->items.push_back(*tokenItem);
-        }
+        std::wstring strToken(token.begin(), token.end());        
+        MemoryItem * tokenItem = new MemoryItem();
+        tokenItem->type = TestableToken;
+        tokenItem->value = strToken;
+        result->items.push_back(*tokenItem);
     }
 
     outputBoundary.present(result);
