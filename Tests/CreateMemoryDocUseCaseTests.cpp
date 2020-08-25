@@ -125,12 +125,11 @@ void CreateMemoryDocUseCaseTests::verifyResults(std::vector<std::wstring> expect
     QVERIFY(model != nullptr);
     CreateMemoryDocResultModel result = *model;   
 
-    for(auto it = result.items.begin(); it != result.items.end(); ++it)
+    /*for(auto it = result.items.begin(); it != result.items.end(); ++it)
     {
         MemoryItem item = *it;
         std::wcout << L"'" << item.value << L"'\n";
-    }
-
+    }*/
 
     QVERIFY(result.items.size() == expectations.size());
     for(size_t i = 0; i < expectations.size(); i++)

@@ -30,11 +30,8 @@ void CreateMemoryDocUseCase::create(CreateMemoryDocRequestModel& request, Create
         }      
 
         //handle punctuation
-        if(isPunctuationCharacter(c)) {
-            MemoryItem * punctuationItem = new MemoryItem();
-            punctuationItem->type = Punctionation;
-            punctuationItem->value = c;
-            result->items.push_back(*punctuationItem);
+        if(isPunctuationCharacter(c)) {            
+            result->items.push_back(*createPunctuationItem(c));
             ++it;
             continue;
         }
@@ -61,19 +58,12 @@ void CreateMemoryDocUseCase::create(CreateMemoryDocRequestModel& request, Create
             c = *(++it);
         } while(it != end && !iswspace(c));
 
-        std::wstring strToken(token.begin(), token.end());
-        MemoryItem * tokenItem = new MemoryItem();
-        tokenItem->type = TestableToken;
-        tokenItem->value = strToken;
-        result->items.push_back(*tokenItem);
+        std::wstring strToken(token.begin(), token.end());        
+        result->items.push_back(*createTokenItem(strToken));
 
         for(auto tpc = trailingPuncChars.begin(); tpc != trailingPuncChars.end(); ++tpc)
         {
-            wchar_t tpchar = *tpc;
-            MemoryItem * punctuationItem = new MemoryItem();
-            punctuationItem->type = Punctionation;
-            punctuationItem->value = tpchar;
-            result->items.push_back(*punctuationItem);
+            result->items.push_back(*createPunctuationItem(*tpc));
         }
     }
 
@@ -83,4 +73,20 @@ void CreateMemoryDocUseCase::create(CreateMemoryDocRequestModel& request, Create
 bool CreateMemoryDocUseCase::isPunctuationCharacter(wchar_t c)
 {
     return punctuationChars.find(c) != punctuationChars.end();
+}
+
+MemoryItem * CreateMemoryDocUseCase::createPunctuationItem(wchar_t punctuationChar)
+{
+    MemoryItem * punctuationItem = new MemoryItem();
+    punctuationItem->type = Punctionation;
+    punctuationItem->value = punctuationChar;
+    return punctuationItem;
+}
+
+MemoryItem * CreateMemoryDocUseCase::createTokenItem(std::wstring token)
+{
+    MemoryItem * tokenItem = new MemoryItem();
+    tokenItem->type = TestableToken;
+    tokenItem->value = token;
+    return tokenItem;
 }

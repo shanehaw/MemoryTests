@@ -17,7 +17,10 @@ public:
 private:
     std::wstring source;
     std::set<wchar_t> punctuationChars;
+
     bool isPunctuationCharacter(wchar_t c);
+    MemoryItem * createPunctuationItem(wchar_t punctuationChar);
+    MemoryItem * createTokenItem(std::wstring token);
 };
 
 #endif // CREATEMEMORYDOCUSECASE_H
