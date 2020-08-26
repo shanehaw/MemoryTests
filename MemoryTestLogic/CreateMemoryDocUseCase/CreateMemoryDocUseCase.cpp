@@ -18,7 +18,8 @@ void CreateMemoryDocUseCase::create(CreateMemoryDocRequestModel& request, Create
     end = request.source.cend();
     while(hasNextToken())
     {        
-        getNextToken(*result);
+        MemoryItem * item = getNextToken();
+        result->items.push_back(*item);
     }
     outputBoundary.present(result);
 }
@@ -50,57 +51,53 @@ bool CreateMemoryDocUseCase::hasNextToken()
     return current != end || buffer.size() > 0;
 }
 
-void CreateMemoryDocUseCase::getNextToken(CreateMemoryDocResultModel& fooResult)
+MemoryItem * CreateMemoryDocUseCase::getNextToken()
 {
-    MemoryItem * result = nullptr;
-    if(buffer.size() > 0)
+    if(shouldProcessBuffer())
     {
-        MemoryItem item = buffer.front();
-        result = &item;
-        buffer.pop_front();
+        return getNextBufferItem();
     }
 
-    if(result == nullptr && hasNextToken())
-    {
-        wchar_t c = *current;
+    wchar_t c = getNextChar();
+    std::wcout << L"outer c = '" << c << L"'" << std::endl;
+    if(isPunctuationCharacter(c)) {
+        ++current;
+        return createPunctuationItem(c);;
+    }
 
-        if(isPunctuationCharacter(c)) {
-            result = createPunctuationItem(c);
-            ++current;
+    tokenBuilder.clear();
+    trailingPunctuationCharactersBuilder.clear();
+    do
+    {
+        if(isPunctuationCharacter(c))
+        {
+            trailingPunctuationCharactersBuilder.push_back(c);
         }
         else
         {
-            std::vector<wchar_t> token;
-            std::vector<wchar_t> trailingPuncChars;
-            do
+            for(auto tpc = trailingPunctuationCharactersBuilder.begin(); tpc != trailingPunctuationCharactersBuilder.end(); ++tpc)
             {
-                if(isPunctuationCharacter(c))
-                {
-                    trailingPuncChars.push_back(c);
-                }
-                else
-                {
-                    for(auto tpc = trailingPuncChars.begin(); tpc != trailingPuncChars.end(); ++tpc)
-                    {
-                        wchar_t tpchar = *tpc;
-                        token.push_back(tpchar);
-                    }
-                    trailingPuncChars.clear();
-                    token.push_back(c);
-                }
-                c = *(++current);
-            } while(current != end && !iswspace(c));
-
-            std::wstring strToken(token.begin(), token.end());
-            result = createTokenItem(strToken);
-
-            for(auto tpc = trailingPuncChars.begin(); tpc != trailingPuncChars.end(); ++tpc)
-            {
-                buffer.push_back(*createPunctuationItem(*tpc));
+                wchar_t tpchar = *tpc;
+                tokenBuilder.push_back(tpchar);
             }
+            trailingPunctuationCharactersBuilder.clear();
+            tokenBuilder.push_back(c);
         }
+        //c = *(++current);
+        ++current;
+        c = getNextChar();
+
+        std::wcout << L"inner c = '" << c << L"'" << std::endl;
+
+    } while(current != end && !iswspace(c));    
+
+    for(auto tpc = trailingPunctuationCharactersBuilder.begin(); tpc != trailingPunctuationCharactersBuilder.end(); ++tpc)
+    {
+        buffer.push_back(createPunctuationItem(*tpc));
     }
-    fooResult.items.push_back(*result);
+
+    std::wstring strToken(tokenBuilder.begin(), tokenBuilder.end());
+    return createTokenItem(strToken);
 }
 
 void CreateMemoryDocUseCase::skipWhitespace()
@@ -111,4 +108,27 @@ void CreateMemoryDocUseCase::skipWhitespace()
         ++current;
         c = *current;
     }
+}
+
+bool CreateMemoryDocUseCase::shouldProcessBuffer()
+{
+    return buffer.size() > 0;
+}
+
+MemoryItem * CreateMemoryDocUseCase::getNextBufferItem()
+{
+    MemoryItem * result = buffer.front();
+    buffer.pop_front();
+    return result;
+}
+
+wchar_t CreateMemoryDocUseCase::getNextChar()
+{
+    //skipWhitespace();
+    wchar_t result = *current;
+    /*if(current != end)
+    {
+        ++current;
+    }*/
+    return result;
 }

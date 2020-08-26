@@ -15,18 +15,27 @@ public:
     void create(CreateMemoryDocRequestModel& request, CreateMemoryDocOutputBoundary& outputBoundary) override;
 
 private:    
+
+
+
     std::set<wchar_t> punctuationChars;
     std::wstring::const_iterator current;
     std::wstring::const_iterator end;
-    std::deque<MemoryItem> buffer;
+    std::deque<MemoryItem *> buffer;
+    std::vector<wchar_t> tokenBuilder;
+    std::vector<wchar_t> trailingPunctuationCharactersBuilder;
 
     bool isPunctuationCharacter(wchar_t c);
     MemoryItem * createPunctuationItem(wchar_t punctuationChar);
     MemoryItem * createTokenItem(std::wstring token);
 
     bool hasNextToken();
-    void getNextToken(CreateMemoryDocResultModel& result);
+    MemoryItem * getNextToken();
     void skipWhitespace();
+
+    bool shouldProcessBuffer();
+    MemoryItem * getNextBufferItem();
+    wchar_t getNextChar();
 };
 
 #endif // CREATEMEMORYDOCUSECASE_H
