@@ -11,62 +11,15 @@ CreateMemoryDocUseCase::~CreateMemoryDocUseCase()
 }
 
 void CreateMemoryDocUseCase::create(CreateMemoryDocRequestModel& request, CreateMemoryDocOutputBoundary& outputBoundary)
-{    
-    source = request.source;
-    punctuationChars = request.punctuationChars;
-
-
+{
     CreateMemoryDocResultModel * result = new CreateMemoryDocResultModel();
-    auto it = request.source.cbegin();
-    auto end = request.source.cend();
-    while(it != end)
+    punctuationChars = request.punctuationChars;
+    current = request.source.cbegin();
+    end = request.source.cend();
+    while(hasNextToken())
     {        
-        wchar_t c = *it;
-        //handle white space
-        if(iswspace(c))
-        {
-            ++it;
-            continue;
-        }      
-
-        //handle punctuation
-        if(isPunctuationCharacter(c)) {            
-            result->items.push_back(*createPunctuationItem(c));
-            ++it;
-            continue;
-        }
-
-        //handle words
-        std::vector<wchar_t> token;
-        std::vector<wchar_t> trailingPuncChars;
-        do
-        {            
-            if(isPunctuationCharacter(c))
-            {
-                trailingPuncChars.push_back(c);
-            }
-            else
-            {
-                for(auto tpc = trailingPuncChars.begin(); tpc != trailingPuncChars.end(); ++tpc)
-                {
-                    wchar_t tpchar = *tpc;
-                    token.push_back(tpchar);
-                }
-                trailingPuncChars.clear();
-                token.push_back(c);
-            }
-            c = *(++it);
-        } while(it != end && !iswspace(c));
-
-        std::wstring strToken(token.begin(), token.end());        
-        result->items.push_back(*createTokenItem(strToken));
-
-        for(auto tpc = trailingPuncChars.begin(); tpc != trailingPuncChars.end(); ++tpc)
-        {
-            result->items.push_back(*createPunctuationItem(*tpc));
-        }
+        getNextToken(*result);
     }
-
     outputBoundary.present(result);
 }
 
@@ -89,4 +42,73 @@ MemoryItem * CreateMemoryDocUseCase::createTokenItem(std::wstring token)
     tokenItem->type = TestableToken;
     tokenItem->value = token;
     return tokenItem;
+}
+
+bool CreateMemoryDocUseCase::hasNextToken()
+{
+    skipWhitespace();
+    return current != end || buffer.size() > 0;
+}
+
+void CreateMemoryDocUseCase::getNextToken(CreateMemoryDocResultModel& fooResult)
+{
+    MemoryItem * result = nullptr;
+    if(buffer.size() > 0)
+    {
+        MemoryItem item = buffer.front();
+        result = &item;
+        buffer.pop_front();
+    }
+
+    if(result == nullptr && hasNextToken())
+    {
+        wchar_t c = *current;
+
+        if(isPunctuationCharacter(c)) {
+            result = createPunctuationItem(c);
+            ++current;
+        }
+        else
+        {
+            std::vector<wchar_t> token;
+            std::vector<wchar_t> trailingPuncChars;
+            do
+            {
+                if(isPunctuationCharacter(c))
+                {
+                    trailingPuncChars.push_back(c);
+                }
+                else
+                {
+                    for(auto tpc = trailingPuncChars.begin(); tpc != trailingPuncChars.end(); ++tpc)
+                    {
+                        wchar_t tpchar = *tpc;
+                        token.push_back(tpchar);
+                    }
+                    trailingPuncChars.clear();
+                    token.push_back(c);
+                }
+                c = *(++current);
+            } while(current != end && !iswspace(c));
+
+            std::wstring strToken(token.begin(), token.end());
+            result = createTokenItem(strToken);
+
+            for(auto tpc = trailingPuncChars.begin(); tpc != trailingPuncChars.end(); ++tpc)
+            {
+                buffer.push_back(*createPunctuationItem(*tpc));
+            }
+        }
+    }
+    fooResult.items.push_back(*result);
+}
+
+void CreateMemoryDocUseCase::skipWhitespace()
+{
+    wchar_t c = *current;
+    while(iswspace(c))
+    {
+        ++current;
+        c = *current;
+    }
 }
