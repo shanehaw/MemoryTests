@@ -58,17 +58,23 @@ MemoryItem * CreateMemoryDocUseCase::getNextToken()
         return getNextBufferItem();
     }
 
+    skipWhitespace();
     wchar_t c = getNextChar();
-    std::wcout << L"outer c = '" << c << L"'" << std::endl;
-    if(isPunctuationCharacter(c)) {
-        ++current;
+    /*std::wcout << L"outer c = '" << c << L"'" << std::endl;*/
+    if(isPunctuationCharacter(c)) {        
         return createPunctuationItem(c);;
     }
 
     tokenBuilder.clear();
+    tokenBuilder.push_back(c);
     trailingPunctuationCharactersBuilder.clear();
-    do
+    while(current != end)
     {
+        c = getNextChar();
+        /*std::wcout << L"inner c = '" << c << L"'" << std::endl;*/
+
+        if(iswspace(c)) break;
+
         if(isPunctuationCharacter(c))
         {
             trailingPunctuationCharactersBuilder.push_back(c);
@@ -83,13 +89,7 @@ MemoryItem * CreateMemoryDocUseCase::getNextToken()
             trailingPunctuationCharactersBuilder.clear();
             tokenBuilder.push_back(c);
         }
-        //c = *(++current);
-        ++current;
-        c = getNextChar();
-
-        std::wcout << L"inner c = '" << c << L"'" << std::endl;
-
-    } while(current != end && !iswspace(c));    
+    }
 
     for(auto tpc = trailingPunctuationCharactersBuilder.begin(); tpc != trailingPunctuationCharactersBuilder.end(); ++tpc)
     {
@@ -101,7 +101,7 @@ MemoryItem * CreateMemoryDocUseCase::getNextToken()
 }
 
 void CreateMemoryDocUseCase::skipWhitespace()
-{
+{    
     wchar_t c = *current;
     while(iswspace(c))
     {
@@ -123,12 +123,11 @@ MemoryItem * CreateMemoryDocUseCase::getNextBufferItem()
 }
 
 wchar_t CreateMemoryDocUseCase::getNextChar()
-{
-    //skipWhitespace();
+{    
     wchar_t result = *current;
-    /*if(current != end)
+    if(current != end)
     {
         ++current;
-    }*/
+    }
     return result;
 }
