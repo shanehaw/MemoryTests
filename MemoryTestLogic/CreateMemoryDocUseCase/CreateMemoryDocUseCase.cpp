@@ -48,7 +48,7 @@ MemoryItem * CreateMemoryDocUseCase::createTokenItem(std::wstring token)
 bool CreateMemoryDocUseCase::hasNextToken()
 {
     skipWhitespace();
-    return current != end || buffer.size() > 0;
+    return isNotEndOfSource() || shouldProcessBuffer();
 }
 
 MemoryItem * CreateMemoryDocUseCase::getNextToken()
@@ -57,47 +57,80 @@ MemoryItem * CreateMemoryDocUseCase::getNextToken()
     {
         return getNextBufferItem();
     }
+    return processNextChar();
+}
 
+MemoryItem * CreateMemoryDocUseCase::processNextChar()
+{
     skipWhitespace();
-    wchar_t c = getNextChar();
-    /*std::wcout << L"outer c = '" << c << L"'" << std::endl;*/
-    if(isPunctuationCharacter(c)) {        
-        return createPunctuationItem(c);;
+    getNextChar();    
+    if(isPunctuationCharacter(curChar)) {
+        return createPunctuationItem(curChar);
     }
+    return processNextWord();
+}
 
+MemoryItem * CreateMemoryDocUseCase::processNextWord()
+{
+    clearBuilders();
+    buildWordToken();
+    processTrailingPunctuationCharacters();
+    return createTokenItemFromBuilder();
+}
+
+void CreateMemoryDocUseCase::clearBuilders()
+{
     tokenBuilder.clear();
-    tokenBuilder.push_back(c);
     trailingPunctuationCharactersBuilder.clear();
-    while(current != end)
+}
+
+void CreateMemoryDocUseCase::buildWordToken()
+{
+    tokenBuilder.push_back(curChar);
+    while(isNotEndOfSource())
     {
-        c = getNextChar();
-        /*std::wcout << L"inner c = '" << c << L"'" << std::endl;*/
+        getNextChar();
+        if(isEndOfWord()) break;
 
-        if(iswspace(c)) break;
-
-        if(isPunctuationCharacter(c))
+        if(isPunctuationCharacter(curChar))
         {
-            trailingPunctuationCharactersBuilder.push_back(c);
+            trailingPunctuationCharactersBuilder.push_back(curChar);
         }
         else
         {
-            for(auto tpc = trailingPunctuationCharactersBuilder.begin(); tpc != trailingPunctuationCharactersBuilder.end(); ++tpc)
-            {
-                wchar_t tpchar = *tpc;
-                tokenBuilder.push_back(tpchar);
-            }
-            trailingPunctuationCharactersBuilder.clear();
-            tokenBuilder.push_back(c);
+            addTrailingPunctuationCharactersToTokenBuilder();
+            tokenBuilder.push_back(curChar);
         }
     }
+}
 
+bool CreateMemoryDocUseCase::isEndOfWord()
+{
+    return iswspace(curChar);
+}
+
+void CreateMemoryDocUseCase::processTrailingPunctuationCharacters()
+{
     for(auto tpc = trailingPunctuationCharactersBuilder.begin(); tpc != trailingPunctuationCharactersBuilder.end(); ++tpc)
     {
         buffer.push_back(createPunctuationItem(*tpc));
     }
+}
 
+MemoryItem * CreateMemoryDocUseCase::createTokenItemFromBuilder()
+{
     std::wstring strToken(tokenBuilder.begin(), tokenBuilder.end());
     return createTokenItem(strToken);
+}
+
+void CreateMemoryDocUseCase::addTrailingPunctuationCharactersToTokenBuilder()
+{
+    for(auto tpc = trailingPunctuationCharactersBuilder.begin(); tpc != trailingPunctuationCharactersBuilder.end(); ++tpc)
+    {
+        wchar_t tpchar = *tpc;
+        tokenBuilder.push_back(tpchar);
+    }
+    trailingPunctuationCharactersBuilder.clear();
 }
 
 void CreateMemoryDocUseCase::skipWhitespace()
@@ -122,12 +155,16 @@ MemoryItem * CreateMemoryDocUseCase::getNextBufferItem()
     return result;
 }
 
-wchar_t CreateMemoryDocUseCase::getNextChar()
+void CreateMemoryDocUseCase::getNextChar()
 {    
-    wchar_t result = *current;
+    curChar = *current;
     if(current != end)
     {
         ++current;
-    }
-    return result;
+    }    
+}
+
+bool CreateMemoryDocUseCase::isNotEndOfSource()
+{
+    return current != end;
 }
