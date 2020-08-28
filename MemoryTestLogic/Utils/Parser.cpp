@@ -38,12 +38,16 @@ MemoryItem * Parser::getNextToken()
 
 MemoryItem * Parser::processNextChar()
 {
-    skipWhitespace();
-    moveNextChar();
+    skipWhitespace();    
+    MemoryItem * result = nullptr;
     if(isPunctuationCharacter(curChar)) {
-        return createPunctuationItem(curChar);
+        result = createPunctuationItem(curChar);
     }
-    return processNextWord();
+    else {
+        result = processNextWord();
+    }
+    moveNextChar();
+    return result;
 }
 
 MemoryItem * Parser::processNextWord()
@@ -62,12 +66,8 @@ void Parser::clearBuilders()
 
 void Parser::buildWordToken()
 {
-    tokenBuilder.push_back(curChar);
-    while(isNotEndOfSource())
+    do
     {
-        moveNextChar();
-        if(isEndOfWord()) break;
-
         if(isPunctuationCharacter(curChar))
         {
             trailingPunctuationCharactersBuilder.push_back(curChar);
@@ -77,12 +77,13 @@ void Parser::buildWordToken()
             addTrailingPunctuationCharactersToTokenBuilder();
             tokenBuilder.push_back(curChar);
         }
-    }
+        moveNextChar();
+    } while(isNotEndOfSource() && isNotEndOfWord());
 }
 
-bool Parser::isEndOfWord()
+bool Parser::isNotEndOfWord()
 {
-    return iswspace(curChar);
+    return !iswspace(curChar);
 }
 
 void Parser::processTrailingPunctuationCharacters()
@@ -111,10 +112,10 @@ void Parser::addTrailingPunctuationCharactersToTokenBuilder()
 
 void Parser::skipWhitespace()
 {
-    wchar_t c = source[index];
-    while(iswspace(c))
+    curChar = source[index];
+    while(iswspace(curChar))
     {
-        c = source[++index];
+        curChar = source[++index];
     }
 }
 
@@ -132,10 +133,9 @@ MemoryItem * Parser::getNextBufferItem()
 
 void Parser::moveNextChar()
 {
-    curChar = source[index];
     if(index < source.length())
     {
-        index++;
+        curChar = source[++index];
     }
 }
 

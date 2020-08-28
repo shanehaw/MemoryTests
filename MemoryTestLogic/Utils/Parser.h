@@ -16,7 +16,7 @@ public:
     Parser(std::wstring src, std::set<wchar_t> puncChars)
     {
         source = src;
-        punctuationChars = puncChars;
+        punctuationChars = puncChars;        
     }
 
     bool hasNextToken();
@@ -52,7 +52,7 @@ private:
     void processTrailingPunctuationCharacters();
 
     MemoryItem * createTokenItemFromBuilder();
-    bool isEndOfWord();
+    bool isNotEndOfWord();
     bool isNotEndOfSource();
     void addTrailingPunctuationCharactersToTokenBuilder();
 };

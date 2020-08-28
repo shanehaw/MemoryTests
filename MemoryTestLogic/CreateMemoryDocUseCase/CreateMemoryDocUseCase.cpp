@@ -8,7 +8,7 @@ void CreateMemoryDocUseCase::create(CreateMemoryDocRequestModel& request, Create
     std::vector<MemoryItem> pItems;
     while(parser.hasNextToken())
     {
-         result->items.push_back(*parser.getNextToken());
+         result->items.push_back(parser.getNextToken());
     }
     outputBoundary.present(result);
 }

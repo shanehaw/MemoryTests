@@ -115,7 +115,7 @@ void CreateMemoryDocUseCaseTests::verifyEmptyResultFor(std::wstring source)
     useCase->create(request, *spy);
     QVERIFY(spy->receivedModel != nullptr);
 
-    std::deque<MemoryItem> items = spy->receivedModel->items;
+    std::deque<MemoryItem *> items = spy->receivedModel->items;
     QVERIFY(items.size() == 0);
 }
 
@@ -136,20 +136,20 @@ void CreateMemoryDocUseCaseTests::verifyResults(std::vector<std::wstring> expect
     QVERIFY(result.items.size() == expectations.size());
     for(size_t i = 0; i < expectations.size(); i++)
     {
-        MemoryItem actual = result.items[i];
+        MemoryItem * actual = result.items[i];
         std::wstring expected = expectations[i];
         std::wstring type = expected.substr(0, 1);
         std::wstring value = expected.substr(2);
 
         if(type == L"P")
         {
-            QVERIFY(actual.type == Punctionation);
-            QVERIFY(actual.value == std::wstring(value));
+            QVERIFY(actual->type == Punctionation);
+            QVERIFY(actual->value == std::wstring(value));
         }
         else if(type == L"T")
         {
-            QVERIFY(actual.type == TestableToken);
-            QVERIFY(actual.value == std::wstring(value));
+            QVERIFY(actual->type == TestableToken);
+            QVERIFY(actual->value == std::wstring(value));
         }
         else
         {

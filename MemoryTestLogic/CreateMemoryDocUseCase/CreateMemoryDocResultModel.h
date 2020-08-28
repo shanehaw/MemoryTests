@@ -5,7 +5,7 @@
 #include "MemoryItem.h"
 
 struct CreateMemoryDocResultModel {
-    std::deque<MemoryItem> items;
+    std::deque<MemoryItem*> items;
 };
 
 #endif // CREATEMEMORYDOCRESULTMODEL_H

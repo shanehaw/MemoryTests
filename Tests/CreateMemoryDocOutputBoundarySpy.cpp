@@ -9,7 +9,12 @@ CreateMemoryDocOutputBoundarySpy::~CreateMemoryDocOutputBoundarySpy()
 {
     if(receivedModel != nullptr)
     {
+        for(MemoryItem * item : receivedModel->items)
+        {
+            delete item;
+        }
         delete receivedModel;
+        receivedModel = nullptr;
     }
 }
 
