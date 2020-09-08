@@ -32,7 +32,7 @@ private:
     CreateMemoryDocOutputBoundarySpy * spy;
 
     void verifyEmptyResultFor(std::wstring source);
-    void verifyResults(std::vector<std::wstring> expectations);
+    void verifyResults(std::vector<std::vector<std::wstring>> expectationLines);
     CreateMemoryDocRequestModel createRequest(std::wstring source, std::vector<wchar_t> punctuationMarks);
     std::string convertToString(std::wstring source);
 };

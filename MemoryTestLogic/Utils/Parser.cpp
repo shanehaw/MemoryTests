@@ -1,26 +1,5 @@
 #include "Parser.h"
 
-bool Parser::isPunctuationCharacter(wchar_t c)
-{
-    return punctuationChars.find(c) != punctuationChars.end();
-}
-
-MemoryItem * Parser::createPunctuationItem(wchar_t punctuationChar)
-{
-    MemoryItem * punctuationItem = new MemoryItem();
-    punctuationItem->type = Punctionation;
-    punctuationItem->value = punctuationChar;
-    return punctuationItem;
-}
-
-MemoryItem * Parser::createTokenItem(std::wstring token)
-{
-    MemoryItem * tokenItem = new MemoryItem();
-    tokenItem->type = TestableToken;
-    tokenItem->value = token;
-    return tokenItem;
-}
-
 bool Parser::hasNextToken()
 {
     skipWhitespace();
@@ -39,13 +18,9 @@ MemoryItem * Parser::getNextToken()
 MemoryItem * Parser::processNextChar()
 {
     skipWhitespace();    
-    MemoryItem * result = nullptr;
-    if(isPunctuationCharacter(curChar)) {
-        result = createPunctuationItem(curChar);
-    }
-    else {
-        result = processNextWord();
-    }
+    MemoryItem * result = isPunctuationCharacter(curChar) 
+       ? createPunctuationItem(curChar)
+       : processNextWord();    
     moveNextChar();
     return result;
 }
@@ -142,4 +117,25 @@ void Parser::moveNextChar()
 bool Parser::isNotEndOfSource()
 {
     return index < source.length();
+}
+
+bool Parser::isPunctuationCharacter(wchar_t c)
+{
+    return punctuationChars.find(c) != punctuationChars.end();
+}
+
+MemoryItem * Parser::createPunctuationItem(wchar_t punctuationChar)
+{
+    MemoryItem * punctuationItem = new MemoryItem();
+    punctuationItem->type = Punctionation;
+    punctuationItem->value = punctuationChar;
+    return punctuationItem;
+}
+
+MemoryItem * Parser::createTokenItem(std::wstring token)
+{
+    MemoryItem * tokenItem = new MemoryItem();
+    tokenItem->type = TestableToken;
+    tokenItem->value = token;
+    return tokenItem;
 }

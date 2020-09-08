@@ -40,7 +40,7 @@ void CreateMemoryDocUseCaseTests::singlePunctuation()
         L".",
         { L'.' });
     useCase->create(request, *spy);
-    verifyResults({ L"P:." });
+    verifyResults({{ L"P:." }});
 }
 
 void CreateMemoryDocUseCaseTests::multiplePunctuation()
@@ -49,7 +49,7 @@ void CreateMemoryDocUseCaseTests::multiplePunctuation()
         L"...",
         { L'.' });
     useCase->create(request, *spy);
-    verifyResults({L"P:.", L"P:.", L"P:."});
+    verifyResults({{L"P:.", L"P:.", L"P:."}});
 }
 
 void CreateMemoryDocUseCaseTests::singleCharacter()
@@ -58,7 +58,7 @@ void CreateMemoryDocUseCaseTests::singleCharacter()
         L"a",
         { L'.' });
     useCase->create(request, *spy);
-    verifyResults({L"T:a"});
+    verifyResults({{L"T:a"}});
 }
 
 void CreateMemoryDocUseCaseTests::singleWord()
@@ -67,7 +67,7 @@ void CreateMemoryDocUseCaseTests::singleWord()
                 L"word",
                 { L'.' });
     useCase->create(request, *spy);
-    verifyResults({L"T:word"});
+    verifyResults({{L"T:word"}});
 }
 
 void CreateMemoryDocUseCaseTests::multipleWords()
@@ -76,7 +76,7 @@ void CreateMemoryDocUseCaseTests::multipleWords()
                 L"multiple words",
                 { L'.' });
     useCase->create(request, *spy);
-    verifyResults({L"T:multiple", L"T:words"});
+    verifyResults({{L"T:multiple", L"T:words"}});
 }
 
 void CreateMemoryDocUseCaseTests::punctuationWithWords()
@@ -85,7 +85,7 @@ void CreateMemoryDocUseCaseTests::punctuationWithWords()
                 L"This contains \"multiple words\"!?#",
                 { L'\"', L'!', L'?', L'#' });
     useCase->create(request, *spy);
-    verifyResults({L"T:This", L"T:contains", L"P:\"", L"T:multiple", L"T:words", L"P:\"", L"P:!", L"P:?", L"P:#"});
+    verifyResults({{L"T:This", L"T:contains", L"P:\"", L"T:multiple", L"T:words", L"P:\"", L"P:!", L"P:?", L"P:#"}});
 }
 
 void CreateMemoryDocUseCaseTests::punctuationInWords()
@@ -94,7 +94,7 @@ void CreateMemoryDocUseCaseTests::punctuationInWords()
                 L"Let's go",
                 { L'\'' });
     useCase->create(request, *spy);
-    verifyResults({L"T:Let\'s", L"T:go"});
+    verifyResults({{L"T:Let\'s", L"T:go"}});
 }
 
 void CreateMemoryDocUseCaseTests::punctuationOnEndButNotEndOfSource()
@@ -103,7 +103,7 @@ void CreateMemoryDocUseCaseTests::punctuationOnEndButNotEndOfSource()
                 L"Let's go! I said.",
                 { L'\'', L'.', L'!' });
     useCase->create(request, *spy);
-    verifyResults({L"T:Let\'s", L"T:go", L"P:!", L"T:I", L"T:said", L"P:."});
+    verifyResults({{L"T:Let\'s", L"T:go", L"P:!", L"T:I", L"T:said", L"P:."}});
 }
 
 //helpers¸
@@ -115,45 +115,62 @@ void CreateMemoryDocUseCaseTests::verifyEmptyResultFor(std::wstring source)
     useCase->create(request, *spy);
     QVERIFY(spy->receivedModel != nullptr);
 
-    std::deque<MemoryItem *> items = spy->receivedModel->items;
-    QVERIFY(items.size() == 0);
+    std::vector<std::vector<MemoryItem *>*> lines = spy->receivedModel->lines;
+    for(size_t i = 0; i < lines.size(); i++)
+    {
+        std::vector<MemoryItem*> * items = lines[i];
+        QVERIFY(items->size() == 0);
+    }
 }
 
-void CreateMemoryDocUseCaseTests::verifyResults(std::vector<std::wstring> expectations)
+void CreateMemoryDocUseCaseTests::verifyResults(std::vector<std::vector<std::wstring>> expectationLines)
 {
-    CreateMemoryDocResultModel * model = spy->receivedModel;
+    //std::wcout << L"Start of verifyResults" << std::endl;
+    CreateMemoryDocResultModel * model = spy->receivedModel;    
     QVERIFY(model != nullptr);
+
+    //std::wcout << L"Result is not null" << std::endl;
     CreateMemoryDocResultModel result = *model;   
 
     /*
-    for(auto it = result.items.begin(); it != result.items.end(); ++it)
+    for(std::vector<MemoryItem*> * line : result.lines)
     {
-        MemoryItem item = *it;
-        std::wcout << L"'" << item.value << L"'\n";
+        std::wcout << L"found line" << std::endl;
+        for(MemoryItem * item : *line)
+        {
+            std::wcout << L"found item" << std::endl;
+            std::wcout << L"'" << item->value << L"'\n";
+        }
     }
     */
 
-    QVERIFY(result.items.size() == expectations.size());
-    for(size_t i = 0; i < expectations.size(); i++)
+    QVERIFY(result.lines.size() == expectationLines.size());
+    for(size_t i = 0; i < expectationLines.size(); i++)
     {
-        MemoryItem * actual = result.items[i];
-        std::wstring expected = expectations[i];
-        std::wstring type = expected.substr(0, 1);
-        std::wstring value = expected.substr(2);
+        std::vector<MemoryItem*>* actualLine = result.lines[i];
+        std::vector<std::wstring> expectedLine = expectationLines[i];
+        for(size_t j = 0; j < expectedLine.size(); j++)
+        {
+            std::wstring expected = expectedLine[j];
+            MemoryItem* actual = (*actualLine)[j];
+            std::wstring type = expected.substr(0, 1);
+            std::wstring value = expected.substr(2);
 
-        if(type == L"P")
-        {
-            QVERIFY(actual->type == Punctionation);
-            QVERIFY(actual->value == std::wstring(value));
-        }
-        else if(type == L"T")
-        {
-            QVERIFY(actual->type == TestableToken);
-            QVERIFY(actual->value == std::wstring(value));
-        }
-        else
-        {
-            QVERIFY(1 == 2);
+            if(type == L"P")
+            {
+                QVERIFY(actual->type == Punctionation);
+                QVERIFY(actual->value == std::wstring(value));
+            }
+            else if(type == L"T")
+            {
+                QVERIFY(actual->type == TestableToken);
+                QVERIFY(actual->value == std::wstring(value));
+            }
+            else
+            {
+                //Surely there is a better way to do this?
+                QVERIFY(1 == 2);
+            }
         }
     }
 }
