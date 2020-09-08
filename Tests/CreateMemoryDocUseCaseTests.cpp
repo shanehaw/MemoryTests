@@ -115,11 +115,11 @@ void CreateMemoryDocUseCaseTests::verifyEmptyResultFor(std::wstring source)
     useCase->create(request, *spy);
     QVERIFY(spy->receivedModel != nullptr);
 
-    std::vector<std::vector<MemoryItem *>*> lines = spy->receivedModel->lines;
+    std::vector<std::vector<MemoryItem *>> lines = spy->receivedModel->lines;
     for(size_t i = 0; i < lines.size(); i++)
     {
-        std::vector<MemoryItem*> * items = lines[i];
-        QVERIFY(items->size() == 0);
+        std::vector<MemoryItem*> items = lines[i];
+        QVERIFY(items.size() == 0);
     }
 }
 
@@ -147,12 +147,12 @@ void CreateMemoryDocUseCaseTests::verifyResults(std::vector<std::vector<std::wst
     QVERIFY(result.lines.size() == expectationLines.size());
     for(size_t i = 0; i < expectationLines.size(); i++)
     {
-        std::vector<MemoryItem*>* actualLine = result.lines[i];
+        std::vector<MemoryItem*> actualLine = result.lines[i];
         std::vector<std::wstring> expectedLine = expectationLines[i];
         for(size_t j = 0; j < expectedLine.size(); j++)
         {
             std::wstring expected = expectedLine[j];
-            MemoryItem* actual = (*actualLine)[j];
+            MemoryItem* actual = actualLine[j];
             std::wstring type = expected.substr(0, 1);
             std::wstring value = expected.substr(2);
 
@@ -168,8 +168,7 @@ void CreateMemoryDocUseCaseTests::verifyResults(std::vector<std::vector<std::wst
             }
             else
             {
-                //Surely there is a better way to do this?
-                QVERIFY(1 == 2);
+                QT_THROW(std::exception());
             }
         }
     }

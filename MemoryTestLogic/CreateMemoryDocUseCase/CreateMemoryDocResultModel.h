@@ -6,18 +6,7 @@
 #include "MemoryItem.h"
 
 struct CreateMemoryDocResultModel {
-    std::vector<std::vector<MemoryItem*>*> lines;
-    ~CreateMemoryDocResultModel()
-    {
-        /*for(std::vector<MemoryItem*>* line : lines)
-        {
-            for(MemoryItem * item : *line)
-            {
-                delete item;
-            }
-            delete line;
-        }*/
-    }
+    std::vector<std::vector<MemoryItem*>> lines;
 };
 
 #endif // CREATEMEMORYDOCRESULTMODEL_H
