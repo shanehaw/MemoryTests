@@ -10,6 +10,9 @@ public:
     CreateMemoryDocUseCase() { }
     ~CreateMemoryDocUseCase() { }
     void create(CreateMemoryDocRequestModel& request, CreateMemoryDocOutputBoundary& outputBoundary) override;
+
+private:
+    std::vector<std::wstring> breakIntoLines(std::wstring source, wchar_t newLineChar);
 };
 
 #endif // CREATEMEMORYDOCUSECASE_H

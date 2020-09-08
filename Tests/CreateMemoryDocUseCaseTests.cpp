@@ -133,10 +133,10 @@ void CreateMemoryDocUseCaseTests::verifyResults(std::vector<std::vector<std::wst
     CreateMemoryDocResultModel result = *model;   
 
     /*
-    for(std::vector<MemoryItem*> * line : result.lines)
+    for(std::vector<MemoryItem*> line : result.lines)
     {
         std::wcout << L"found line" << std::endl;
-        for(MemoryItem * item : *line)
+        for(MemoryItem * item : line)
         {
             std::wcout << L"found item" << std::endl;
             std::wcout << L"'" << item->value << L"'\n";
