@@ -2,4 +2,5 @@ TEMPLATE = subdirs
 
 SUBDIRS += \
     MemoryTestLogic \
-    Tests
+    Tests \
+    UI
