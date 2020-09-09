@@ -7,9 +7,10 @@ CONFIG -= app_bundle
 TEMPLATE = app
 
 INCLUDEPATH += ../MemoryTestLogic/CreateMemoryDocUseCase/ \
-    ../MemoryTestLogic/Utils/
+    ../MemoryTestLogic/Utils/ \
+    ../UILogic/
 
-LIBS += -L ../MemoryTestLogic -l MemoryTestLogic
+LIBS += -L"../MemoryTestLogic" -lMemoryTestLogic -L"../UILogic" -lUILogic
 
 SOURCES +=  \
     CreateMemoryDocOutputBoundarySpy.cpp \
