@@ -12,6 +12,7 @@ public:
         this->presenter = presenter;
         this->inputBoundary = inputBoundary;
     }
+    virtual ~MainWindowController() {}
     void createMemoryDoc(std::wstring source, std::set<wchar_t> punctuationChars);
 
 private:

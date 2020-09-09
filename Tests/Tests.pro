@@ -6,9 +6,9 @@ CONFIG -= app_bundle
 
 TEMPLATE = app
 
-INCLUDEPATH += ../MemoryTestLogic/CreateMemoryDocUseCase/ \
-    ../MemoryTestLogic/Utils/ \
-    ../UILogic/
+INCLUDEPATH += ../MemoryTestLogic/CreateMemoryDocUseCase/
+INCLUDEPATH += ../MemoryTestLogic/Utils/
+INCLUDEPATH += ../UILogic/
 
 LIBS += -L../MemoryTestLogic -lMemoryTestLogic
 LIBS += -L../UILogic -lUILogic

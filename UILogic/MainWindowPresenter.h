@@ -11,7 +11,7 @@ public:
     {
         this->view = view;
     }
-    ~MainWindowPresenter() {}
+    virtual ~MainWindowPresenter() {}
     void present(CreateMemoryDocResultModel *result) override;
 
 private:
