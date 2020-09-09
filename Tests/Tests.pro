@@ -6,9 +6,10 @@ CONFIG -= app_bundle
 
 TEMPLATE = app
 
-INCLUDEPATH += ../MemoryTestLogic/CreateMemoryDocUseCase
+INCLUDEPATH += ../MemoryTestLogic/CreateMemoryDocUseCase/ \
+    ../MemoryTestLogic/Utils/
 
-LIBS += -L ../../build-MemoryTests-Desktop_Qt_5_15_0_GCC_64bit-Debug/MemoryTestLogic -l MemoryTestLogic
+LIBS += -L ../MemoryTestLogic -l MemoryTestLogic
 
 SOURCES +=  \
     CreateMemoryDocOutputBoundarySpy.cpp \
