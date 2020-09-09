@@ -8,9 +8,9 @@ CONFIG += c++11
 # In order to do so, uncomment the following line.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
-INCLUDEPATH += ../MemoryTestLogic/CreateMemoryDocUseCase
+INCLUDEPATH += ../UILogic/
 
-LIBS += -L ../../build-MemoryTests-Desktop_Qt_5_15_0_GCC_64bit-Debug/MemoryTestLogic -l MemoryTestLogic
+LIBS += -L"../UILogic" -lUILogic
 
 SOURCES += \
     MainWindow.cpp \
