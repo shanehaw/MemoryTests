@@ -2,7 +2,8 @@
 #define CREATEMEMORYDOCUSECASE_H
 
 #include "CreateMemoryDocInputBoundary.h"
-#include "../Utils/Parser.h"
+#include "../Utils/LineParser.h"
+#include "../Utils/LineExtractor.h"
 
 class CreateMemoryDocUseCase : public CreateMemoryDocInputBoundary
 {
@@ -12,7 +13,7 @@ public:
     void create(CreateMemoryDocRequestModel& request, CreateMemoryDocOutputBoundary& outputBoundary) override;
 
 private:
-    std::vector<std::wstring> breakIntoLines(std::wstring source, wchar_t newLineChar);
+    std::vector<MemoryItem*> parseLine(std::wstring line, std::set<wchar_t> punctuationChars);
 };
 
 #endif // CREATEMEMORYDOCUSECASE_H

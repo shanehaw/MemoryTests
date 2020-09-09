@@ -17,8 +17,9 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    Utils/Parser.cpp \
-    CreateMemoryDocUseCase/CreateMemoryDocUseCase.cpp
+    Utils/LineExtractor.cpp \
+    CreateMemoryDocUseCase/CreateMemoryDocUseCase.cpp \
+    Utils/LineParser.cpp
 
 HEADERS += \
     CreateMemoryDocUseCase/CreateMemoryDocInputBoundary.h \
@@ -28,7 +29,8 @@ HEADERS += \
     CreateMemoryDocUseCase/CreateMemoryDocUseCase.h \
     CreateMemoryDocUseCase/MemoryItem.h \
     CreateMemoryDocUseCase/MemoryItemType.h \
-    Utils/Parser.h
+    Utils/LineExtractor.h \
+    Utils/LineParser.h
 
 # Default rules for deployment.
 unix {

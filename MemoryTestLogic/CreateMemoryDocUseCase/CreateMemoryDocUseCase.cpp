@@ -3,40 +3,22 @@
 
 void CreateMemoryDocUseCase::create(CreateMemoryDocRequestModel& request, CreateMemoryDocOutputBoundary& outputBoundary)
 {    
-    CreateMemoryDocResultModel * result = new CreateMemoryDocResultModel();    
-    std::vector<std::wstring> lines = breakIntoLines(request.source, L'\n');
-    for(std::wstring line : lines)
-    {
-        std::vector<MemoryItem*> resultLine;
-        Parser parser(line, request.punctuationChars);
-        while(parser.hasNextToken())
-        {
-            resultLine.push_back(parser.getNextToken());
-        }
-        result->lines.push_back(resultLine);
+    CreateMemoryDocResultModel * result = new CreateMemoryDocResultModel();
+    LineExtractor lineExtractor(request.source, L'\n');
+    for(std::wstring line : lineExtractor.extractLines())
+    {        
+        result->lines.push_back(parseLine(line, request.punctuationChars));
     }
     outputBoundary.present(result);
 }
 
-std::vector<std::wstring> CreateMemoryDocUseCase::breakIntoLines(std::wstring source, wchar_t newLineChar)
+std::vector<MemoryItem*> CreateMemoryDocUseCase::parseLine(std::wstring line, std::set<wchar_t> punctuationChars)
 {
-    std::vector<std::wstring> result;
-    std::vector<wchar_t> lineBuffer;
-    for(size_t i = 0; i < source.length(); i++)
+    std::vector<MemoryItem*> result;
+    LineParser parser(line, punctuationChars);
+    while(parser.hasNextToken())
     {
-        wchar_t current = source[i];
-        if(current != newLineChar)
-        {
-            lineBuffer.push_back(current);
-        }
-        else
-        {
-            result.push_back(std::wstring(lineBuffer.begin(), lineBuffer.end()));
-            lineBuffer.clear();
-        }
+        result.push_back(parser.getNextToken());
     }
-    result.push_back(std::wstring(lineBuffer.begin(), lineBuffer.end()));
-    lineBuffer.clear();
-
     return result;
 }

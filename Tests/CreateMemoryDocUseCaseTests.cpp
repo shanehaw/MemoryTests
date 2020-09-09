@@ -106,6 +106,19 @@ void CreateMemoryDocUseCaseTests::punctuationOnEndButNotEndOfSource()
     verifyResults({{L"T:Let\'s", L"T:go", L"P:!", L"T:I", L"T:said", L"P:."}});
 }
 
+void CreateMemoryDocUseCaseTests::wordsOnMultipleLines()
+{
+    CreateMemoryDocRequestModel request = createRequest(
+                L"Line1\nLine2\nLine3\nLine4",
+                { });
+    useCase->create(request, *spy);
+    verifyResults({
+        { L"T:Line1" },
+        { L"T:Line2" },
+        { L"T:Line3" },
+        { L"T:Line4" }});
+}
+
 //helpers¸
 void CreateMemoryDocUseCaseTests::verifyEmptyResultFor(std::wstring source)
 {
@@ -162,7 +175,7 @@ void CreateMemoryDocUseCaseTests::verifyResults(std::vector<std::vector<std::wst
                 QVERIFY(actual->value == std::wstring(value));
             }
             else if(type == L"T")
-            {
+            {                
                 QVERIFY(actual->type == TestableToken);
                 QVERIFY(actual->value == std::wstring(value));
             }

@@ -1,5 +1,5 @@
-#ifndef PARSER_H
-#define PARSER_H
+#ifndef LINEPARSER_H
+#define LINEPARSER_H
 
 #include "../CreateMemoryDocUseCase/MemoryItem.h"
 
@@ -10,10 +10,10 @@
 #include <set>
 #include <iostream>
 
-class Parser
+class LineParser
 {
 public:    
-    Parser(std::wstring src, std::set<wchar_t> puncChars)
+    LineParser(std::wstring src, std::set<wchar_t> puncChars)
     {
         source = src;
         punctuationChars = puncChars;        
@@ -35,8 +35,6 @@ private:
     bool isPunctuationCharacter(wchar_t c);
     MemoryItem * createPunctuationItem(wchar_t punctuationChar);
     MemoryItem * createTokenItem(std::wstring token);
-
-
 
     void skipWhitespace();
 

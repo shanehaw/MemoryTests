@@ -26,6 +26,7 @@ private slots:
     void punctuationWithWords();
     void punctuationInWords();
     void punctuationOnEndButNotEndOfSource();
+    void wordsOnMultipleLines();
 
 private:
     CreateMemoryDocInputBoundary * useCase;

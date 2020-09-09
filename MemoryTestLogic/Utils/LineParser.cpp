@@ -1,12 +1,12 @@
-#include "Parser.h"
+#include "LineParser.h"
 
-bool Parser::hasNextToken()
+bool LineParser::hasNextToken()
 {
     skipWhitespace();
     return isNotEndOfSource() || shouldProcessBuffer();
 }
 
-MemoryItem * Parser::getNextToken()
+MemoryItem * LineParser::getNextToken()
 {
     if(shouldProcessBuffer())
     {
@@ -15,7 +15,7 @@ MemoryItem * Parser::getNextToken()
     return processNextChar();
 }
 
-MemoryItem * Parser::processNextChar()
+MemoryItem * LineParser::processNextChar()
 {
     skipWhitespace();    
     MemoryItem * result = isPunctuationCharacter(curChar) 
@@ -25,7 +25,7 @@ MemoryItem * Parser::processNextChar()
     return result;
 }
 
-MemoryItem * Parser::processNextWord()
+MemoryItem * LineParser::processNextWord()
 {
     clearBuilders();
     buildWordToken();
@@ -33,13 +33,13 @@ MemoryItem * Parser::processNextWord()
     return createTokenItemFromBuilder();
 }
 
-void Parser::clearBuilders()
+void LineParser::clearBuilders()
 {
     tokenBuilder.clear();
     trailingPunctuationCharactersBuilder.clear();
 }
 
-void Parser::buildWordToken()
+void LineParser::buildWordToken()
 {
     do
     {
@@ -56,12 +56,12 @@ void Parser::buildWordToken()
     } while(isNotEndOfSource() && isNotEndOfWord());
 }
 
-bool Parser::isNotEndOfWord()
+bool LineParser::isNotEndOfWord()
 {
     return !iswspace(curChar);
 }
 
-void Parser::processTrailingPunctuationCharacters()
+void LineParser::processTrailingPunctuationCharacters()
 {
     for(auto tpc = trailingPunctuationCharactersBuilder.begin(); tpc != trailingPunctuationCharactersBuilder.end(); ++tpc)
     {
@@ -69,13 +69,13 @@ void Parser::processTrailingPunctuationCharacters()
     }
 }
 
-MemoryItem * Parser::createTokenItemFromBuilder()
+MemoryItem * LineParser::createTokenItemFromBuilder()
 {
     std::wstring strToken(tokenBuilder.begin(), tokenBuilder.end());
     return createTokenItem(strToken);
 }
 
-void Parser::addTrailingPunctuationCharactersToTokenBuilder()
+void LineParser::addTrailingPunctuationCharactersToTokenBuilder()
 {
     for(auto tpc = trailingPunctuationCharactersBuilder.begin(); tpc != trailingPunctuationCharactersBuilder.end(); ++tpc)
     {
@@ -85,7 +85,7 @@ void Parser::addTrailingPunctuationCharactersToTokenBuilder()
     trailingPunctuationCharactersBuilder.clear();
 }
 
-void Parser::skipWhitespace()
+void LineParser::skipWhitespace()
 {
     curChar = source[index];
     while(iswspace(curChar))
@@ -94,19 +94,19 @@ void Parser::skipWhitespace()
     }
 }
 
-bool Parser::shouldProcessBuffer()
+bool LineParser::shouldProcessBuffer()
 {
     return buffer.size() > 0;
 }
 
-MemoryItem * Parser::getNextBufferItem()
+MemoryItem * LineParser::getNextBufferItem()
 {
     MemoryItem * result = buffer.front();
     buffer.pop_front();
     return result;
 }
 
-void Parser::moveNextChar()
+void LineParser::moveNextChar()
 {
     if(index < source.length())
     {
@@ -114,17 +114,17 @@ void Parser::moveNextChar()
     }
 }
 
-bool Parser::isNotEndOfSource()
+bool LineParser::isNotEndOfSource()
 {
     return index < source.length();
 }
 
-bool Parser::isPunctuationCharacter(wchar_t c)
+bool LineParser::isPunctuationCharacter(wchar_t c)
 {
     return punctuationChars.find(c) != punctuationChars.end();
 }
 
-MemoryItem * Parser::createPunctuationItem(wchar_t punctuationChar)
+MemoryItem * LineParser::createPunctuationItem(wchar_t punctuationChar)
 {
     MemoryItem * punctuationItem = new MemoryItem();
     punctuationItem->type = Punctionation;
@@ -132,7 +132,7 @@ MemoryItem * Parser::createPunctuationItem(wchar_t punctuationChar)
     return punctuationItem;
 }
 
-MemoryItem * Parser::createTokenItem(std::wstring token)
+MemoryItem * LineParser::createTokenItem(std::wstring token)
 {
     MemoryItem * tokenItem = new MemoryItem();
     tokenItem->type = TestableToken;
