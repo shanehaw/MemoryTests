@@ -14,10 +14,16 @@ INCLUDEPATH += ../MemoryTestLogic/CreateMemoryDocUseCase/
 LIBS += -L"../MemoryTestLogic" -lMemoryTestLogic
 
 SOURCES += \
+    MainWindowController.cpp \
     MainWindowPresenter.cpp
 
 HEADERS += \
-    MainWindowPresenter.h
+    MainWindowController.h \
+    MainWindowPresenter.h \
+    MainWindowView.h \
+    MainWindowViewItem.h \
+    MainWindowViewModel.h \
+    MemoryItemViewType.h
 
 # Default rules for deployment.
 unix {

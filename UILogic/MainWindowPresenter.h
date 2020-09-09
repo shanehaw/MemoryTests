@@ -1,14 +1,21 @@
-#ifndef UILOGIC_H
-#define UILOGIC_H
+#ifndef MAINWINDOWPRESENTER_H
+#define MAINWINDOWPRESENTER_H
 
 #include "CreateMemoryDocOutputBoundary.h"
+#include "MainWindowView.h"
 
-class UILogic: public CreateMemoryDocOutputBoundary
+class MainWindowPresenter: public CreateMemoryDocOutputBoundary
 {
 public:
-    UILogic();
-    virtual ~UILogic();
+    MainWindowPresenter(MainWindowView* view)
+    {
+        this->view = view;
+    }
+    ~MainWindowPresenter() {}
     void present(CreateMemoryDocResultModel *result) override;
+
+private:
+    MainWindowView * view;
 };
 
-#endif // UILOGIC_H
+#endif // MAINWINDOWPRESENTER_H

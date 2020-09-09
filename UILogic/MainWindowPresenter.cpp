@@ -1,10 +1,6 @@
 #include "MainWindowPresenter.h"
 
-UILogic::UILogic()
-{
-}
-
-void UILogic::present(CreateMemoryDocResultModel *result)
+void MainWindowPresenter::present(CreateMemoryDocResultModel *result)
 {
     //TODO
 }
