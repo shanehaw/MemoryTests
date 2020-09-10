@@ -13,10 +13,13 @@ class MainWindowTests : public QObject
 private slots:
     void init();
     void cleanup();
-    void punctuation();
+    void multiLineMultiType();
 
 private:
     MainWindowViewSpy* viewSpy;
+
+    CreateMemoryDocResultModel createResultModel(std::vector<std::vector<std::wstring>> lines);
+    void verifyViewModel(std::vector<std::vector<std::wstring>> lines);
 };
 
 #endif // MAINWINDOWTESTS_H

@@ -7,12 +7,19 @@ class MainWindowViewSpy: public MainWindowView
 {
 public:
     MainWindowViewSpy() {}
-    ~MainWindowViewSpy() {}
+    ~MainWindowViewSpy()
+    {
+        if(receivedModel != nullptr)
+        {
+            delete receivedModel;
+            receivedModel = nullptr;
+        }
+    }
     void show(MainWindowViewModel* model) override
     {
         receivedModel = model;
     }
-    MainWindowViewModel* receivedModel;
+    MainWindowViewModel* receivedModel = nullptr;
 };
 
 #endif // MAINWINDOWVIEWSPY_H
