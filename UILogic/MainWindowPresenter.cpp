@@ -26,5 +26,5 @@ void MainWindowPresenter::present(CreateMemoryDocResultModel * resultModel)
         result->items.push_back(viewLine);
     }
     //delete resultModel;
-    view->show(result);
+    view->render(result);
 }

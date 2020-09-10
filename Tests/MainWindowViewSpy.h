@@ -15,7 +15,7 @@ public:
             receivedModel = nullptr;
         }
     }
-    void show(MainWindowViewModel* model) override
+    void render(MainWindowViewModel* model) override
     {
         receivedModel = model;
     }

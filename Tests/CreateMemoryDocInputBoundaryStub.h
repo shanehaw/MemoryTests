@@ -12,7 +12,7 @@ public:
         this->result = result;
     }
     ~CreateMemoryDocInputBoundaryStub() {}
-    void create(CreateMemoryDocRequestModel& request, CreateMemoryDocOutputBoundary& outputBoundary) override {
+    void create(CreateMemoryDocRequestModel&, CreateMemoryDocOutputBoundary& outputBoundary) override {
         outputBoundary.present(result);
     }
 

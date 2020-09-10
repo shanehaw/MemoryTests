@@ -12,20 +12,12 @@ void MainWindowTests::cleanup()
 
 void MainWindowTests::multiLineMultiType()
 {
-    CreateMemoryDocResultModel result = createResultModel({{L"P:."}});
+    CreateMemoryDocResultModel result = createResultModel({{L"T:Line1", L"P:!"},{L"T:Line2", L"P:?"}, {L"T:Line3", L"P:;"}});
     CreateMemoryDocInputBoundaryStub inputBoundary(&result);
     MainWindowPresenter presenter(viewSpy);
     MainWindowController ctrl(&presenter, &inputBoundary);
-
-    ctrl.createMemoryDoc(L".", {L'.'});
-
-    verifyViewModel({{L"L:."}});
-
-    /*QVERIFY(viewSpy->receivedModel != nullptr);
-    QVERIFY(viewSpy->receivedModel->items.size() == 1); //1 Line
-    QVERIFY(viewSpy->receivedModel->items[0].size() == 1); //1 Item
-    QVERIFY(viewSpy->receivedModel->items[0][0]->type == Label);
-    QVERIFY(viewSpy->receivedModel->items[0][0]->value == L".");*/
+    ctrl.createMemoryDoc(L"", {});
+    verifyViewModel({{L"T:Line1", L"L:!"},{L"T:Line2", L"L:?"},{L"T:Line3", L"L:;"}});
 }
 
 CreateMemoryDocResultModel MainWindowTests::createResultModel(std::vector<std::vector<std::wstring>> lines)
